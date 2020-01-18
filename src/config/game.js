@@ -8,6 +8,13 @@ const gameConfig = {
     width: 500,
     height: 500,
   },
+  physics: {
+    default: 'arcade',
+    arcade: {
+      debug: true,
+      gravity: { y: 600 },
+    },
+  },
   pixelArt: true,
   scene: [Scene0],
 };
