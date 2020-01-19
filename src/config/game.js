@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import Scene0 from '../scenes/scene0';
+import Scene1 from '../scenes/scene1';
 
 const gameConfig = {
   title: 'Cool game',
@@ -16,7 +17,7 @@ const gameConfig = {
     },
   },
   pixelArt: true,
-  scene: [Scene0],
+  scene: [Scene0, Scene1],
 };
 
 export default gameConfig;

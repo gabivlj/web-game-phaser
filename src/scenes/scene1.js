@@ -1,19 +1,18 @@
 import Phaser, { Scenes } from 'phaser';
 import Player from '../objects/player';
 import DialogManager from '../objects/dialogManager';
-import cutscene01 from '../cutscenes/cutscene01';
+import cutscene02 from '../cutscenes/cutscene02';
 import sceneUtils from '../config/scenes';
-import playerConfig from '../config/playerConfig';
 
 const sceneConfig = {
   // active: false,
   // visible: false,
-  key: 'MainScene',
+  key: 'SecondScene',
 };
 
 const path = `http://localhost:5500`;
 
-class Scene0 extends Phaser.Scene {
+class Scene1 extends Phaser.Scene {
   constructor() {
     super(sceneConfig);
     this.controls = null;
@@ -26,15 +25,15 @@ class Scene0 extends Phaser.Scene {
 
   preload() {
     this.load.audio('music', `${path}/assets/music.mp3`);
-    this.load.image('tiles', `${path}/assets/Tileset.png`);
     this.load.audio('jump_sound', `${path}/assets/jumpSound.mp3`);
+    this.load.image('tiles', `${path}/assets/Tileset.png`);
     this.load.spritesheet('player', `${path}/assets/tutorial/player.png`, {
       frameWidth: 32,
       frameHeight: 32,
       margin: 1,
       spacing: 2,
     });
-    this.load.tilemapTiledJSON(`pls`, `${path}/pls.json`);
+    this.load.tilemapTiledJSON(`pls02`, `${path}/pls02.json`);
     this.jumpGroup = this.physics.add.staticGroup();
     this.jumps = [];
   }
@@ -44,15 +43,29 @@ class Scene0 extends Phaser.Scene {
    */
   generateColGoal(objects) {
     const goal = [];
+    const badBarrels = [];
+
     objects.forEachTile(tile => {
-      if (tile.index < 0 || !tile.properties.win) return;
+      if (tile.index < 0 || (!tile.properties.win && !tile.properties.death))
+        return;
+      if (tile.properties.death) {
+        badBarrels.push(tile.index);
+
+        return;
+      }
       goal.push(tile.index);
     });
     objects.setTileIndexCallback(
       goal,
       () => {
-        playerConfig.canJumpFromWalls = true;
         sceneUtils.changeScene(this);
+      },
+      this,
+    );
+    objects.setTileIndexCallback(
+      badBarrels,
+      () => {
+        sceneUtils.restart(this);
       },
       this,
     );
@@ -60,9 +73,9 @@ class Scene0 extends Phaser.Scene {
 
   create() {
     this.PlayerGroup = this.physics.add.group({ collideWorldBounds: true });
-    sceneUtils.configScene.bind(this)('pls', 100, 30);
+    sceneUtils.configScene.bind(this)('pls02', 40, 700);
     // this.camera.setViewport(0, 0, 300, 300);
-    this.cutscene = cutscene01(this);
+    this.cutscene = cutscene02(this);
     this.sceneUpdate = sceneUtils.sceneUpdate.bind(this);
   }
 
@@ -71,4 +84,4 @@ class Scene0 extends Phaser.Scene {
   }
 }
 
-export default Scene0;
+export default Scene1;

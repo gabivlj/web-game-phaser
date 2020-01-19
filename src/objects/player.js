@@ -1,12 +1,14 @@
+/* eslint-disable no-return-assign */
 import Phaser from 'phaser';
 import DialogManager from './dialogManager';
+import playerConfig from '../config/playerConfig';
 
 let dead = false;
 const pickUpDialogWhenDead = [
-  'Damn, you suck at this.\nI am glad we are good against\nphysical damage',
+  'Damn, you suck at this.',
   'So, are we trying again?',
-  'BOOOOOOOORING...',
-  'Oh man, silly silly huh',
+  'This is becoming boring\nto be honest....',
+  'Chill out!!',
 ];
 
 const dialogWhenJumping = [
@@ -33,10 +35,11 @@ export default class Player {
           Math.floor(Math.random() * pickUpDialogWhenDead.length)
         ],
       ]);
-
-      setTimeout(() => dialog.nextDialog(), 10000);
+      dialog.nextDialog();
+      setTimeout(() => dialog.nextDialog(), 3000);
     }
     this.scene = scene;
+    this.usedJump = true;
 
     // Create the animations we need from the player spritesheet
     const { anims } = scene;
@@ -60,7 +63,7 @@ export default class Player {
       .setMaxVelocity(300, 400);
 
     // Track the arrow keys & WASD
-    const { LEFT, RIGHT, UP, W, A, D } = Phaser.Input.Keyboard.KeyCodes;
+    const { LEFT, RIGHT, UP, W, A, D, SPACE } = Phaser.Input.Keyboard.KeyCodes;
     this.keys = scene.input.keyboard.addKeys({
       left: LEFT,
       right: RIGHT,
@@ -68,14 +71,32 @@ export default class Player {
       w: W,
       a: A,
       d: D,
+      space: SPACE,
     });
+    this.sprite.setTint(0xfff5db);
+  }
+
+  checkWallJump(againstWall, inputAgainstWall, onGround, up) {
+    if (!playerConfig.canJumpFromWalls) return;
+    const { sprite } = this;
+    if (againstWall && !onGround && up) {
+      // input.up.isDown || input.w.isDown
+      sprite.setVelocityY(-300);
+      sprite.setBounceX(100);
+    } else if (againstWall && !onGround && inputAgainstWall) {
+      // input.left.isDown || input.a.isDown
+      sprite.setVelocityY(30);
+    }
   }
 
   update(canMove) {
-    const { keys } = this;
-    const { sprite } = this;
+    const { sprite, keys } = this;
     const onGround = sprite.body.blocked.down;
+    const onLeft = sprite.body.blocked.left;
+    const onRight = sprite.body.blocked.right;
     const acceleration = onGround ? 600 : 200;
+    sprite.setBounceX(0);
+    sprite.setBounceY(0);
     if (this.scene.physics.world.overlap(this.sprite, this.scene.jumpGroup)) {
       // this.sprite.setBounceY(100);
 
@@ -98,8 +119,33 @@ export default class Player {
 
       // Only allow the player to jump if they are on the ground
       if (onGround && (keys.up.isDown || keys.w.isDown)) {
+        this.scene.sound.play('jump_sound');
         sprite.setVelocityY(-300);
+        setTimeout(() => (this.usedJump = false), 300);
+      } else if (
+        playerConfig.canDoubleJump &&
+        !onGround &&
+        !this.usedJump &&
+        (keys.up.isDown || keys.w.isDown)
+      ) {
+        console.log('xxxdf');
+        this.usedJump = true;
+        sprite.setVelocityY(-200);
       }
+
+      this.checkWallJump(
+        onLeft,
+        !keys.up.isDown && (keys.left.isDown || keys.a.isDown),
+        onGround,
+        keys.space.isDown,
+      );
+
+      this.checkWallJump(
+        onRight,
+        !keys.up.isDown && (keys.right.isDown || keys.d.isDown),
+        onGround,
+        keys.space.isDown,
+      );
     }
 
     // Update the animation/texture based on the state of the player
