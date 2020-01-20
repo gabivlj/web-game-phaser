@@ -4,7 +4,7 @@
  */
 const playerConfig = {
   canDash: true,
-  canDoubleJump: false,
+  canDoubleJump: true,
   canJumpFromWalls: false,
   canBuildPlatforms: false,
 };

@@ -133,7 +133,6 @@ export default class Player {
     scene.physics.world.on(
       'worldbounds',
       body => {
-        console.log(body);
         if (body.blocked.down) sceneUtils.restart(scene);
       },
       scene,
@@ -278,7 +277,7 @@ export default class Player {
     }
   }
 
-  // estas con que cuando cambia de escena no setea died aun
+  // Shortcut for destroying the player
   destroy() {
     dead = true;
     this.sprite.destroy();

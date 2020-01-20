@@ -1,8 +1,8 @@
-import Player from '../objects/player';
+// import Player from '../objects/player';
 /* eslint-disable no-plusplus */
 
 // List of scene names that we are gonna use for cleaner scene one on one passing
-const scenes = ['MainScene', 'SecondScene'];
+const scenes = ['MainScene', 'SecondScene', 'ThirdScene'];
 let currentScene = 0;
 
 let loadedMusic = false;
@@ -11,6 +11,27 @@ let loadedMusic = false;
  * Scene utils that we are gonna use across all scenes so we save lines of code :)
  */
 const sceneUtils = {
+  preloadScene(scene, { path, tilemapKey }) {
+    scene.load.audio('music', `${path}/assets/music.mp3`);
+    scene.load.audio('jump_sound', `${path}/assets/jump01.mp3`);
+    scene.load.image('tiles', `${path}/assets/Tileset.png`);
+    scene.load.spritesheet('player2', `${path}/assets/tutorial/player.png`, {
+      frameWidth: 32,
+      frameHeight: 32,
+      margin: 1,
+      spacing: 2,
+    });
+    scene.load.spritesheet('player', `${path}/assets/player.png`, {
+      frameWidth: 30,
+      frameHeight: 30,
+      margin: 1,
+      spacing: 2,
+    });
+    scene.load.tilemapTiledJSON(`${tilemapKey}`, `${path}/${tilemapKey}.json`);
+    scene.jumpGroup = scene.physics.add.staticGroup();
+    scene.jumps = [];
+  },
+
   /**
    * Shortcut for resetting a scene.
    * @param {Phaser.Scene} scene
@@ -61,6 +82,7 @@ const sceneUtils = {
     keyTileset,
     posXPlayer,
     posYPlayer,
+    PlayerClass,
     configuration = { volume: 0 },
   ) {
     const { volume } = configuration;
@@ -122,7 +144,7 @@ const sceneUtils = {
     this.generateColGoal(objects);
 
     this.camera = this.cameras.main;
-    this.player = new Player(this, posXPlayer, posYPlayer);
+    this.player = new PlayerClass(this, posXPlayer, posYPlayer);
     this.physics.world.addCollider(this.player.sprite, platforms);
     this.physics.world.addCollider(this.player.sprite, objects);
     this.camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);

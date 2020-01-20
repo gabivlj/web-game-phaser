@@ -8,7 +8,7 @@ let can = true;
 // So there is no instant dialog change...
 function recharge() {
   can = false;
-  setTimeout(() => (can = true), 100);
+  setTimeout(() => (can = true), 100); //
 }
 
 // Check if finished
@@ -25,14 +25,19 @@ export default scene => {
     a: A,
     d: D,
   });
+  /**
+   * [
+    'Yeah, that was easy...',
+    'But you know you can double JUMP?',
+    'Use jump button again on the air!',
+  ]
+   */
   // Current Dialog for this cutscene
   const dialog = new DialogManager(scene, [
-    'Hey...',
-    'Hey!',
-    'DUDE WAKE UP',
-    'Thanks boy!\nDamn I thought you\nwere dead....',
-    'If you are wondering who I am,\nthat is not of your bussiness,\nI am just telling you that we\nneed to leave this place ASAP!!',
-    'They are following us,\nbut you got great power and \ngreat platforming skills \neven though you do not think so right now...',
+    'Ok, you got it.',
+    'I was actually afraid of our lives',
+    'We cant die but...',
+    'Whatever, you know you can jump from walls?',
   ]);
   // Indicate on what current we want the screen to expand
   const EXPAND_SCREEN = 6;
@@ -49,7 +54,6 @@ export default scene => {
    */
   return () => {
     if (current === EXPAND_SCREEN) {
-      scene.camera.setViewport(scene.camera.x, scene.camera.y, 600, 600);
       scene.player.sprite.anims.play('player-idle', true);
       current = 8;
       return false;
@@ -65,8 +69,6 @@ export default scene => {
     // If its on 0, we are on the beginning of the scene
     if (current === 0) {
       dialog.nextDialog();
-      scene.camera.setViewport(scene.camera.x, scene.camera.y, 170, 120);
-      scene.player;
       current++;
       // If its an odd number we are reading dialog
     } else if (current % 2 === 1) {
