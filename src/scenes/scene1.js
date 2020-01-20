@@ -27,9 +27,15 @@ class Scene1 extends Phaser.Scene {
     this.load.audio('music', `${path}/assets/music.mp3`);
     this.load.audio('jump_sound', `${path}/assets/jumpSound.mp3`);
     this.load.image('tiles', `${path}/assets/Tileset.png`);
-    this.load.spritesheet('player', `${path}/assets/tutorial/player.png`, {
+    this.load.spritesheet('player2', `${path}/assets/tutorial/player.png`, {
       frameWidth: 32,
       frameHeight: 32,
+      margin: 1,
+      spacing: 2,
+    });
+    this.load.spritesheet('player', `${path}/assets/tutorial/player.png`, {
+      frameWidth: 30,
+      frameHeight: 20,
       margin: 1,
       spacing: 2,
     });

@@ -1,17 +1,30 @@
 import Player from '../objects/player';
-
 /* eslint-disable no-plusplus */
 
+// List of scene names that we are gonna use for cleaner scene one on one passing
+const scenes = ['MainScene', 'SecondScene'];
 let currentScene = 0;
 
-const scenes = ['MainScene', 'SecondScene'];
 let loadedMusic = false;
 
+/**
+ * Scene utils that we are gonna use across all scenes so we save lines of code :)
+ */
 const sceneUtils = {
+  /**
+   * Shortcut for resetting a scene.
+   * @param {Phaser.Scene} scene
+   */
   restart(scene) {
-    scene.music.stop();
+    scene.player.destroy();
     scene.scene.restart();
+    scene.music.stop();
   },
+
+  /**
+   * Shortcut for passing a scene.
+   * @param {Phaser.Scene} scene
+   */
   changeScene(scene) {
     scene.music.stop();
     if (currentScene + 1 >= scenes.length) return;
@@ -19,12 +32,17 @@ const sceneUtils = {
     scene.scene.start(scenes[currentScene]);
   },
 
+  /**
+   * Shortcut for a scene update
+   * @this {Phaser.Scene} modified scene with this.player, and everything that an update needs.
+   */
   sceneUpdate() {
     this.camera.startFollow(this.player.sprite);
     const canMove = this.cutscene ? this.cutscene() : true;
+    if (!this.player.sprite.body) return;
     this.player.update(canMove);
 
-    if (this.player.sprite.y > 800) {
+    if (this.player.sprite.y > this.heightOfMap - this.player.sprite.height) {
       this.player.destroy();
       this.scene.restart();
       this.music.stop();
@@ -33,21 +51,48 @@ const sceneUtils = {
 
   loadScene() {},
 
-  configScene(keyTileset, posXPlayer, posYPlayer) {
+  /**
+   * General create() configuration for a normal scene.
+   * @param {string} keyTileset
+   * @param {number} posXPlayer
+   * @param {number} posYPlayer
+   */
+  configScene(
+    keyTileset,
+    posXPlayer,
+    posYPlayer,
+    configuration = { volume: 0 },
+  ) {
+    const { volume } = configuration;
+    // Check if we already loaded music
     if (!loadedMusic)
       this.music = this.sound.add('music', {
         loop: true,
-        volume: 0.3,
+        volume,
         delay: 1,
       });
+    // else just resume it
     else this.music.resume();
+    // Set it on false so we know later to reset it
     loadedMusic = false;
     this.music.play();
+    // Make tilemap with the provided tileset key (For different maps u know)
     const map = this.make.tilemap({ key: keyTileset });
+    // The height of the map for checking later if the player f***ed up and fell down.
+    this.heightOfMap = map.heightInPixels;
+    // Set world bounds
+    this.physics.world.setBounds(0, 0, map.widthInPixels, this.heightOfMap);
+    //  Add tileset image to the map, so we can use it. Usually the name of the tileset that we made in Tiled
+    //  is gonna be plstileset, if not just pass in the future to this function the name that you want,
+    //  and tiles is the key for the image that we loaded before
     const tileset = map.addTilesetImage('plstileset', 'tiles');
+    // Background layer
     const background = map.createStaticLayer('Background', tileset, 0, 0);
+    // Platforms layer
     const platforms = map.createDynamicLayer('Platforms', tileset);
+    // Objects layer: (Goal, bad stuff etc.)
     const objects = map.createDynamicLayer('Objects', tileset);
+    // Loop through platforms to get the jumpy ones and add them to the physics group (so we know the player is overlapping)...
     platforms.forEachTile(tile => {
       if (!tile.properties.jump) {
         return;
@@ -64,8 +109,16 @@ const sceneUtils = {
       else if (jump.angle === 90) jump.body.setSize(6, 32).setOffset(0, 0);
       jump.visible = false;
     });
+    // Make them collidable
     platforms.setCollisionByProperty({ collider: true });
+    // Make objects collidable
     objects.setCollisionByProperty({ collider: true });
+    /**
+     * This depends a lot on the Scene object that you passed, literally you can do whatever you want with the objects array depending on the function
+     * usually you want to add what's gonna happen when the player hits the goal tiles or when he hits bad stuff like barrels.
+     * @see Scene1 scene1.js
+     * @see Scene0 scene0.js
+     */
     this.generateColGoal(objects);
 
     this.camera = this.cameras.main;

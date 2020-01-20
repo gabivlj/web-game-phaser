@@ -25,17 +25,34 @@ class Scene0 extends Phaser.Scene {
   }
 
   preload() {
+    // Space enemy!!
+    this.load.spritesheet('space', `${path}/assets/space.png`, {
+      frameWidth: 22,
+      frameHeight: 32,
+      spacing: 10,
+    });
     this.load.audio('music', `${path}/assets/music.mp3`);
     this.load.image('tiles', `${path}/assets/Tileset.png`);
-    this.load.audio('jump_sound', `${path}/assets/jumpSound.mp3`);
-    this.load.spritesheet('player', `${path}/assets/tutorial/player.png`, {
+    this.load.audio('jump_sound', `${path}/assets/jump01.mp3`);
+    // The tutorial that we followed sprite.
+    this.load.spritesheet('player2', `${path}/assets/tutorial/player.png`, {
       frameWidth: 32,
       frameHeight: 32,
       margin: 1,
       spacing: 2,
     });
+    // Player sprite
+    this.load.spritesheet('player', `${path}/assets/player.png`, {
+      frameWidth: 30,
+      frameHeight: 30,
+      margin: 1,
+      spacing: 2,
+    });
+    // Map tile
     this.load.tilemapTiledJSON(`pls`, `${path}/pls.json`);
+    // Jumping tiles
     this.jumpGroup = this.physics.add.staticGroup();
+    // TODO Not important maybe delete
     this.jumps = [];
   }
 

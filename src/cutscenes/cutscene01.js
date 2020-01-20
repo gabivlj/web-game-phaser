@@ -12,7 +12,7 @@ function recharge() {
 }
 
 // Check if finished
-let finished = false;
+let finished = true;
 
 export default scene => {
   let current = 0;

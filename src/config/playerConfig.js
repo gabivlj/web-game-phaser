@@ -3,7 +3,7 @@
  *            Enemy moving up and down.
  */
 const playerConfig = {
-  canDash: false,
+  canDash: true,
   canDoubleJump: false,
   canJumpFromWalls: false,
   canBuildPlatforms: false,
