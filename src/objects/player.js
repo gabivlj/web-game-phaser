@@ -116,6 +116,16 @@ export default class Player {
       D,
       SPACE,
       SHIFT,
+      ONE,
+      TWO,
+      THREE,
+      FOUR,
+      FIVE,
+      SIX,
+      SEVEN,
+      EIGHT,
+      NINE,
+      ZERO,
     } = Phaser.Input.Keyboard.KeyCodes;
     this.keys = scene.input.keyboard.addKeys({
       left: LEFT,
@@ -126,6 +136,16 @@ export default class Player {
       d: D,
       space: SPACE,
       shift: SHIFT,
+      1: ONE,
+      2: TWO,
+      3: THREE,
+      4: FOUR,
+      5: FIVE,
+      6: SIX,
+      7: SEVEN,
+      8: EIGHT,
+      9: NINE,
+      10: ZERO,
     });
     this.sprite.setTint(0xfff5db);
     this.sprite.setCollideWorldBounds(true);
@@ -159,6 +179,12 @@ export default class Player {
    */
   update(canMove) {
     const { sprite, keys } = this;
+    for (let i = 1; i <= 10; i++) {
+      if (keys[i].isDown) {
+        sceneUtils.fastSceneChange(this.scene, i - 1);
+        return;
+      }
+    }
     // Reset the max velocity in case that the player dashed.
     sprite.setMaxVelocity(300, 400);
     // Reset bounciness because we wanna let the player "attach" to the wall

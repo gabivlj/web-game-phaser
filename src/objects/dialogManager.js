@@ -1,3 +1,7 @@
+let before = {
+  instancetext: null,
+};
+
 export default class DialogManager {
   constructor(scene, dialogs = []) {
     this.scene = scene;
@@ -5,6 +9,11 @@ export default class DialogManager {
     this.current = -1;
     this.max = this.dialogs.length;
     this.finished = false;
+    if (before.instancetext) {
+      before.instancetext.destroy();
+      before.instancetext = null;
+      clearInterval(this.currentInterval);
+    }
     this.text = this.scene.add
       .text(16, 16, 'aa', {
         font: '18px monospace',
@@ -13,8 +22,17 @@ export default class DialogManager {
         backgroundColor: '#ffffff',
       })
       .setScrollFactor(0);
+    before.instancetext = this.text;
     this.text.setText('');
     this.currentInterval = null;
+  }
+
+  static setText(t, s) {
+    try {
+      t.setText(s);
+    } catch (_) {
+      // Ok so Phaser3 has a strange bug with updating text on setIntervals that I literally wanna ignore.
+    }
   }
 
   process() {
@@ -24,7 +42,8 @@ export default class DialogManager {
     let i = 0;
     this.currentInterval = setInterval(() => {
       if (!currentDialog) return clearInterval(this.currentInterval);
-      this.text.setText(currentStr);
+      if (!this.text) clearInterval(this.currentInterval);
+      DialogManager.setText(this.text, currentStr);
       if (currentStr.length !== currentDialog.length) {
         currentStr += currentDialog[i];
         i++;
@@ -35,6 +54,8 @@ export default class DialogManager {
   nextDialog() {
     if (this.current >= this.max) {
       this.finished = true;
+      before.instancetext = null;
+      clearInterval(this.currentInterval);
       return this.text.destroy();
     }
     if (this.currentInterval) clearInterval(this.currentInterval);
@@ -42,6 +63,8 @@ export default class DialogManager {
     this.process();
     if (this.current >= this.max) {
       this.finished = true;
+      before.instancetext = null;
+      clearInterval(this.currentInterval);
       return this.text.destroy();
     }
     return null;

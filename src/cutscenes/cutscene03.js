@@ -34,10 +34,8 @@ export default scene => {
    */
   // Current Dialog for this cutscene
   const dialog = new DialogManager(scene, [
-    'Ok, you got it.',
-    'I was actually afraid of our lives',
-    'We cant die but...',
-    'Whatever, you know you can jump from walls?',
+    'Hey, you know you can dash with shift right?',
+    'Yeah, I suppose you knew that...',
   ]);
   // Indicate on what current we want the screen to expand
   const EXPAND_SCREEN = 6;

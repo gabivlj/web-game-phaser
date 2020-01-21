@@ -1,4 +1,5 @@
 import { getCurrentScene, setCurrentScene } from '../storage/scene';
+import timestamper from '../objects/timestamper';
 
 // import Player from '../objects/player';
 /* eslint-disable no-plusplus */
@@ -23,6 +24,7 @@ const sceneUtils = {
     currentScene = idx;
     scene.music.stop();
     setCurrentScene(scenes[currentScene]);
+    timestamper.finish(scene.scene.key);
     scene.scene.start(scenes[currentScene]);
   },
 
@@ -33,11 +35,9 @@ const sceneUtils = {
    */
   preloadScene(scene, { path, tilemapKey }) {
     const currentSceneStr = getCurrentScene();
-    console.log(currentSceneStr, scene.scene.key);
     if (scene.scene.key !== currentSceneStr) {
       currentScene = scenes.indexOf(currentSceneStr);
       scene.scene.start(scenes[currentScene]);
-      return false;
     }
     scene.load.audio('music', `${path}/assets/music.mp3`);
     scene.load.audio('jump_sound', `${path}/assets/jump01.mp3`);
@@ -68,13 +68,15 @@ const sceneUtils = {
     scene.player.destroy();
     scene.scene.restart();
     scene.music.stop();
+    timestamper.finish(scene.scene.key);
   },
 
   /**
    * Shortcut for passing a scene.
    * @param {Phaser.Scene} scene
    */
-  changeScene(scene) {
+  changeScene(scene, success) {
+    timestamper.finish(scene.scene.key, success);
     scene.music.stop();
     if (currentScene + 1 >= scenes.length) return;
     currentScene++;
@@ -177,6 +179,7 @@ const sceneUtils = {
     this.physics.world.addCollider(this.player.sprite, platforms);
     this.physics.world.addCollider(this.player.sprite, objects);
     this.camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    timestamper.start(this);
   },
 };
 
