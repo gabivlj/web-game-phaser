@@ -169,8 +169,7 @@ const sceneUtils = {
     /**
      * This depends a lot on the Scene object that you passed, literally you can do whatever you want with the objects array depending on the function
      * usually you want to add what's gonna happen when the player hits the goal tiles or when he hits bad stuff like barrels.
-     * @see Scene1 scene1.js
-     * @see Scene0 scene0.js
+     * @see Scene scene.js
      */
     this.generateColGoal(objects);
 

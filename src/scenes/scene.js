@@ -37,7 +37,6 @@ export default class Scene extends Phaser.Scene {
         return;
       if (tile.properties.death) {
         badBarrels.push(tile.index);
-
         return;
       }
       goal.push(tile.index);
