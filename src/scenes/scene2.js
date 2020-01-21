@@ -24,7 +24,7 @@ class Scene2 extends Phaser.Scene {
   }
 
   preload() {
-    sceneUtils.preloadScene(this, { path, tilemapKey: 'pls03' });
+    this.OK = sceneUtils.preloadScene(this, { path, tilemapKey: 'pls03' });
   }
 
   /**
@@ -61,6 +61,7 @@ class Scene2 extends Phaser.Scene {
   }
 
   create() {
+    if (!this.OK) return;
     this.PlayerGroup = this.physics.add.group({ collideWorldBounds: true });
     sceneUtils.configScene.bind(this)('pls03', 40, 700, Player);
     // this.camera.setViewport(0, 0, 300, 300);
@@ -69,6 +70,7 @@ class Scene2 extends Phaser.Scene {
   }
 
   update(time, delta) {
+    if (!this.OK) return;
     this.sceneUpdate();
   }
 }

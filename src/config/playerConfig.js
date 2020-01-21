@@ -1,12 +1,9 @@
+import { getPowerUps } from '../storage/scene';
+
 /**
  * @features  Build different platforms. ?Enemies throwing bullets.? Like 5 levels. dash.  Coins?
  *            Enemy moving up and down.
  */
-const playerConfig = {
-  canDash: true,
-  canDoubleJump: true,
-  canJumpFromWalls: false,
-  canBuildPlatforms: false,
-};
+const playerConfig = getPowerUps();
 
 export default playerConfig;

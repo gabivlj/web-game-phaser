@@ -4,6 +4,7 @@ import DialogManager from '../objects/dialogManager';
 import cutscene01 from '../cutscenes/cutscene01';
 import sceneUtils from '../config/scenes';
 import playerConfig from '../config/playerConfig';
+import { setPowerUps } from '../storage/scene';
 
 const sceneConfig = {
   // active: false,
@@ -22,10 +23,11 @@ class Scene0 extends Phaser.Scene {
     this.dialog = null;
     this.cutscene = null;
     this.sceneUpdate = null;
+    this.OK = false;
   }
 
   preload() {
-    sceneUtils.preloadScene(this, { path, tilemapKey: 'pls' });
+    this.OK = sceneUtils.preloadScene(this, { path, tilemapKey: 'pls' });
   }
 
   /**
@@ -41,6 +43,7 @@ class Scene0 extends Phaser.Scene {
       goal,
       () => {
         playerConfig.canJumpFromWalls = true;
+        setPowerUps({ ...playerConfig, canJumpFromWalls: true });
         sceneUtils.changeScene(this);
       },
       this,
@@ -48,7 +51,7 @@ class Scene0 extends Phaser.Scene {
   }
 
   create() {
-    this.PlayerGroup = this.physics.add.group({ collideWorldBounds: true });
+    if (!this.OK) return;
     sceneUtils.configScene.bind(this)('pls', 100, 30, Player);
     // this.camera.setViewport(0, 0, 300, 300);
     this.cutscene = cutscene01(this);
@@ -56,6 +59,7 @@ class Scene0 extends Phaser.Scene {
   }
 
   update(time, delta) {
+    if (!this.OK) return;
     this.sceneUpdate();
   }
 }

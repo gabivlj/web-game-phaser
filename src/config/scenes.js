@@ -1,3 +1,5 @@
+import { getCurrentScene, setCurrentScene } from '../storage/scene';
+
 // import Player from '../objects/player';
 /* eslint-disable no-plusplus */
 
@@ -11,7 +13,32 @@ let loadedMusic = false;
  * Scene utils that we are gonna use across all scenes so we save lines of code :)
  */
 const sceneUtils = {
+  /**
+   *
+   * @param {Phaser.Scene} scene
+   * @param {number} idx
+   */
+  fastSceneChange(scene, idx) {
+    if (idx > currentScene) return;
+    currentScene = idx;
+    scene.music.stop();
+    setCurrentScene(scenes[currentScene]);
+    scene.scene.start(scenes[currentScene]);
+  },
+
+  /**
+   *
+   * @param {Phaser.Scene} scene
+   * @param {object} configuration Config. Object which tells the tilemap that we wanna load and the path of the stuff inside the webserver.
+   */
   preloadScene(scene, { path, tilemapKey }) {
+    const currentSceneStr = getCurrentScene();
+    console.log(currentSceneStr, scene.scene.key);
+    if (scene.scene.key !== currentSceneStr) {
+      currentScene = scenes.indexOf(currentSceneStr);
+      scene.scene.start(scenes[currentScene]);
+      return false;
+    }
     scene.load.audio('music', `${path}/assets/music.mp3`);
     scene.load.audio('jump_sound', `${path}/assets/jump01.mp3`);
     scene.load.image('tiles', `${path}/assets/Tileset.png`);
@@ -30,6 +57,7 @@ const sceneUtils = {
     scene.load.tilemapTiledJSON(`${tilemapKey}`, `${path}/${tilemapKey}.json`);
     scene.jumpGroup = scene.physics.add.staticGroup();
     scene.jumps = [];
+    return true;
   },
 
   /**
@@ -50,6 +78,7 @@ const sceneUtils = {
     scene.music.stop();
     if (currentScene + 1 >= scenes.length) return;
     currentScene++;
+    setCurrentScene(scenes[currentScene]);
     scene.scene.start(scenes[currentScene]);
   },
 
