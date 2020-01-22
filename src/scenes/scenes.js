@@ -7,7 +7,7 @@ import { saveConfig, getConfig } from '../storage/menu';
 /* eslint-disable no-plusplus */
 
 // List of scene names that we are gonna use for cleaner scene one on one passing
-const scenes = ['MainScene', 'SecondScene', 'ThirdScene'];
+const scenes = ['MainScene', 'FourthScene', 'SecondScene', 'ThirdScene'];
 let currentScene = 0;
 let maxScene = getConfig('maxScene', 'number', 0);
 
@@ -38,6 +38,7 @@ const sceneUtils = {
    * @param {object} configuration Config. Object which tells the tilemap that we wanna load and the path of the stuff inside the webserver.
    */
   preloadScene(scene, { path, tilemapKey }) {
+    console.log(tilemapKey)
     const currentSceneStr = getCurrentScene();
     if (scene.scene.key !== currentSceneStr) {
       currentScene = scenes.indexOf(currentSceneStr);
@@ -46,6 +47,7 @@ const sceneUtils = {
     scene.load.audio('music', `${path}/assets/music.mp3`);
     scene.load.audio('jump_sound', `${path}/assets/jump01.mp3`);
     scene.load.image('tiles', `${path}/assets/Tileset.png`);
+    scene.load.image('moving_platform', `${path}/assets/movingPlatform.png`);
     scene.load.spritesheet('player2', `${path}/assets/tutorial/player.png`, {
       frameWidth: 32,
       frameHeight: 32,
@@ -124,7 +126,8 @@ const sceneUtils = {
     posXPlayer,
     posYPlayer,
     PlayerClass,
-    configuration = { volume: 0 },
+    tilesetKey = 'plstileset',
+    configuration = { volume: 0, tilemapKey: 'plstileset' },
   ) {
     const { volume } = configuration;
     // Check if we already loaded music
@@ -148,13 +151,16 @@ const sceneUtils = {
     //  Add tileset image to the map, so we can use it. Usually the name of the tileset that we made in Tiled
     //  is gonna be plstileset, if not just pass in the future to this function the name that you want,
     //  and tiles is the key for the image that we loaded before
-    const tileset = map.addTilesetImage('plstileset', 'tiles');
+    // TODO: call this pls pls
+    const tileset = map.addTilesetImage(tilesetKey, 'tiles');
     // Background layer
     const background = map.createStaticLayer('Background', tileset, 0, 0);
     // Platforms layer
     const platforms = map.createDynamicLayer('Platforms', tileset);
     // Objects layer: (Goal, bad stuff etc.)
     const objects = map.createDynamicLayer('Objects', tileset);
+    // Special Platform layer
+    const movingPlatforms = map.getObjectLayer('SpecialPlatforms');
     // Loop through platforms to get the jumpy ones and add them to the physics group (so we know the player is overlapping)...
     platforms.forEachTile(tile => {
       if (!tile.properties.jump) {
@@ -166,12 +172,14 @@ const sceneUtils = {
         'jump',
       );
       jump.rotation = tile.rotation;
-      jump.rotation = tile.rotation;
       if (jump.angle === 0) jump.body.setSize(25, 12).setOffset(0, 5);
       else if (jump.angle === -90) jump.body.setSize(6, 32).setOffset(0, 0);
       else if (jump.angle === 90) jump.body.setSize(6, 32).setOffset(0, 0);
       jump.visible = false;
     });
+
+    // Loop through special platforms to get to move the ones that move
+    this.generateMovingPlatforms(movingPlatforms);
     // Make them collidable
     platforms.setCollisionByProperty({ collider: true });
     // Make objects collidable

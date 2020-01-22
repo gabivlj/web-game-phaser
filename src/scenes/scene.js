@@ -7,12 +7,15 @@ const path = `http://localhost:5500`;
 export default class Scene extends Phaser.Scene {
   constructor(sceneConfig, cutscene, onChangeToNext = () => {}) {
     super(sceneConfig);
+    this.tilesetKey = sceneConfig.tilesetKey || 'plstileset';
+    console.log(this.tilesetKey)
     this.startingPointPlayer = sceneConfig.startingPointPlayer || [70, 700];
     this.tilemapKey = sceneConfig.tilemapKey;
     this.controls = null;
     this.PlayerGroup = null;
     this.player = null;
     this.dialog = null;
+    this.movingPlatformGroup = null;
     this.sceneUpdate = null;
     this.cutsceneFn = cutscene;
     this.OK = false;
@@ -23,7 +26,29 @@ export default class Scene extends Phaser.Scene {
     this.OK = sceneUtils.preloadScene(this, {
       path,
       tilemapKey: this.tilemapKey,
+      tilesetKey: this.tilesetKey,
     });
+  }
+
+  /**
+   * 
+   * @param {Phaser.Tilemaps.ObjectLayer} layer 
+   */
+  generateMovingPlatforms(layer) {
+    console.log(this.physics.add);
+    this.movingPlatformGroup = this.physics.add.group();
+    if (!layer) return;
+    // por cada objeto haz new MovingPlatform(x, y, tuputamadre, sprite)
+    const { objects } = layer;
+    objects.forEach(tile => {
+      this.movingPlatformGroup.create(tile.x, tile.y, "moving_platform");
+      console.log(layer)
+    });
+    // layer.forEachTile(tile => {
+    //   const { range } = tile.properties
+      
+    //   // TODO: Dani
+    // });
   }
 
   /**
@@ -65,6 +90,11 @@ export default class Scene extends Phaser.Scene {
       this.startingPointPlayer[0],
       this.startingPointPlayer[1],
       Player,
+      this.tilesetKey,
+      {
+        tilesetKey: this.tilesetKey,
+        volume: 0,
+      }
     );
     // this.camera.setViewport(0, 0, 300, 300);
     // this.cutscene = cutscene02(this);
