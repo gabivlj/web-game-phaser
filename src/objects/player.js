@@ -1,8 +1,9 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-return-assign */
 import Phaser from 'phaser';
 import DialogManager from './dialogManager';
 import playerConfig from '../config/playerConfig';
-import sceneUtils from '../config/scenes';
+import sceneUtils from '../scenes/scenes';
 
 let dead = false;
 const pickUpDialogWhenDead = [
@@ -44,6 +45,7 @@ export default class Player {
     // Direction which he is facing.
     this.facing = { right: true, left: false };
     // If the player died before show the message that he died.
+    console.log(dead);
     if (dead) {
       // Choose random dialog with randomized phrase
       this.dialog = new DialogManager(scene, [
@@ -51,6 +53,7 @@ export default class Player {
           Math.floor(Math.random() * pickUpDialogWhenDead.length)
         ],
       ]);
+      console.log('m');
       // start dialog
       this.dialog.nextDialog();
       // if the dialog didn't finish for whatever reason finish it in 3 seconds with another nextDialog()
@@ -71,9 +74,9 @@ export default class Player {
       // Decceleration on X axis
       .setDrag(2000, 0)
       // Size of the colliding box
-      .setSize(30, 20)
+      .setSize(23, 17)
       // Offset so the collider of the sprite works well
-      .setOffset(0, 10)
+      .setOffset(3, 13)
       // Max velocity, important because there is a lot of bouncing goin on if you know what I mean my dudes
       .setMaxVelocity(300, 400)
       // Scale of the sprite and colliding box
@@ -157,6 +160,10 @@ export default class Player {
       },
       scene,
     );
+  }
+
+  setDead(bool) {
+    dead = bool;
   }
 
   checkWallJump(againstWall, inputAgainstWall, onGround, up) {

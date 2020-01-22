@@ -1,4 +1,4 @@
-let before = {
+const before = {
   instancetext: null,
 };
 
@@ -15,7 +15,7 @@ export default class DialogManager {
       clearInterval(this.currentInterval);
     }
     this.text = this.scene.add
-      .text(16, 16, 'aa', {
+      .text(16, 16, '', {
         font: '18px monospace',
         fill: '#000000',
         padding: { x: 20, y: 10 },
@@ -23,15 +23,23 @@ export default class DialogManager {
       })
       .setScrollFactor(0);
     before.instancetext = this.text;
-    this.text.setText('');
     this.currentInterval = null;
   }
 
-  static setText(t, s) {
+  static setText(t, s, scene) {
     try {
       t.setText(s);
     } catch (_) {
-      // Ok so Phaser3 has a strange bug with updating text on setIntervals that I literally wanna ignore.
+      // t.destroy();
+      // // // Ok so Phaser3 has a strange bug with updating text on setIntervals that I literally wanna ignore.
+      // t = scene.add
+      //   .text(16, 16, s, {
+      //     font: '18px monospace',
+      //     fill: '#000000',
+      //     padding: { x: 20, y: 10 },
+      //     backgroundColor: '#ffffff',
+      //   })
+      //   .setScrollFactor(0);
     }
   }
 
@@ -43,7 +51,7 @@ export default class DialogManager {
     this.currentInterval = setInterval(() => {
       if (!currentDialog) return clearInterval(this.currentInterval);
       if (!this.text) clearInterval(this.currentInterval);
-      DialogManager.setText(this.text, currentStr);
+      DialogManager.setText(this.text, currentStr, this.scene);
       if (currentStr.length !== currentDialog.length) {
         currentStr += currentDialog[i];
         i++;
@@ -52,6 +60,7 @@ export default class DialogManager {
   }
 
   nextDialog() {
+    console.log('mm');
     if (this.current >= this.max) {
       this.finished = true;
       before.instancetext = null;

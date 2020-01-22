@@ -2,7 +2,7 @@ import Phaser, { Scenes } from 'phaser';
 import Player from '../objects/player';
 import DialogManager from '../objects/dialogManager';
 import cutscene02 from '../cutscenes/cutscene02';
-import sceneUtils from '../config/scenes';
+import sceneUtils from './scenes';
 import Scene from './scene';
 
 const sceneConfig = {

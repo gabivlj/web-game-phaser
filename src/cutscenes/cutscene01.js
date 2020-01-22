@@ -25,6 +25,11 @@ export default scene => {
     a: A,
     d: D,
   });
+  // If we already had cutscene don't show it again.
+  if (finished)
+    return () => {
+      return true;
+    };
   // Current Dialog for this cutscene
   const dialog = new DialogManager(scene, [
     'Hey...',
@@ -36,12 +41,6 @@ export default scene => {
   ]);
   // Indicate on what current we want the screen to expand
   const EXPAND_SCREEN = 6;
-  // If we already had cutscene don't show it again.
-  if (finished)
-    return () => {
-      dialog.nextDialog();
-      return finished;
-    };
 
   /**
    * Process current, show different actions depending on state. Call on every update tick

@@ -1,5 +1,6 @@
+import Phaser from 'phaser';
 import Player from '../objects/player';
-import sceneUtils from '../config/scenes';
+import sceneUtils from './scenes';
 
 const path = `http://localhost:5500`;
 

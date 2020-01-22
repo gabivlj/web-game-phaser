@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { getCurrentScene, setCurrentScene } from '../storage/scene';
 import timestamper from '../objects/timestamper';
 
@@ -22,6 +23,7 @@ const sceneUtils = {
   fastSceneChange(scene, idx) {
     if (idx > currentScene) return;
     currentScene = idx;
+    scene.player.setDead(false);
     scene.music.stop();
     setCurrentScene(scenes[currentScene]);
     timestamper.finish(scene.scene.key);
@@ -81,6 +83,7 @@ const sceneUtils = {
     if (currentScene + 1 >= scenes.length) return;
     currentScene++;
     setCurrentScene(scenes[currentScene]);
+    scene.player.setDead(false);
     scene.scene.start(scenes[currentScene]);
   },
 
@@ -98,6 +101,7 @@ const sceneUtils = {
       this.player.destroy();
       this.scene.restart();
       this.music.stop();
+      // this.player.setDead(true);
     }
   },
 
