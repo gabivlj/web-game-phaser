@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { getCurrentScene, setCurrentScene } from '../storage/scene';
 import timestamper from '../objects/timestamper';
+import { saveConfig, getConfig } from '../storage/menu';
 
 // import Player from '../objects/player';
 /* eslint-disable no-plusplus */
@@ -8,6 +9,7 @@ import timestamper from '../objects/timestamper';
 // List of scene names that we are gonna use for cleaner scene one on one passing
 const scenes = ['MainScene', 'SecondScene', 'ThirdScene'];
 let currentScene = 0;
+let maxScene = getConfig('maxScene', 'number', 0);
 
 let loadedMusic = false;
 
@@ -21,7 +23,7 @@ const sceneUtils = {
    * @param {number} idx
    */
   fastSceneChange(scene, idx) {
-    if (idx > currentScene) return;
+    if (idx > maxScene) return;
     currentScene = idx;
     scene.player.setDead(false);
     scene.music.stop();
@@ -82,6 +84,10 @@ const sceneUtils = {
     scene.music.stop();
     if (currentScene + 1 >= scenes.length) return;
     currentScene++;
+    if (maxScene <= currentScene) {
+      maxScene = currentScene;
+      saveConfig('maxScene', maxScene);
+    }
     setCurrentScene(scenes[currentScene]);
     scene.player.setDead(false);
     scene.scene.start(scenes[currentScene]);

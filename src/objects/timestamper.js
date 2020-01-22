@@ -29,7 +29,7 @@ export default {
   },
 
   finish(scenekey, success = false) {
-    text.destroy();
+    if (text) text.destroy();
     text = null;
     clearInterval(interval);
     if (success) updateScoreScene(scenekey, newDate.getTime());

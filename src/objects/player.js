@@ -45,7 +45,6 @@ export default class Player {
     // Direction which he is facing.
     this.facing = { right: true, left: false };
     // If the player died before show the message that he died.
-    console.log(dead);
     if (dead) {
       // Choose random dialog with randomized phrase
       this.dialog = new DialogManager(scene, [

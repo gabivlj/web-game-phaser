@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import DialogManager from '../objects/dialogManager';
+import { getConfig, saveConfig } from '../storage/menu';
 
 const { LEFT, RIGHT, UP, W, A, D } = Phaser.Input.Keyboard.KeyCodes;
 
@@ -12,7 +13,7 @@ function recharge() {
 }
 
 // Check if finished
-let finished = false;
+let finished = !!getConfig('cutscene01', 'number', 0);
 
 export default scene => {
   let current = 0;
@@ -55,6 +56,7 @@ export default scene => {
     }
     if (dialog.finished) {
       finished = true;
+      saveConfig('cutscene01', 1);
       return true;
     }
     if (current < EXPAND_SCREEN) {
