@@ -3,6 +3,7 @@ import Player from '../objects/player';
 import sceneUtils from './scenes';
 import timestamper from '../objects/timestamper';
 import FallingPlatform from '../objects/fallingPlatform';
+import MovingPlatform from '../objects/movingPlatform';
 
 const path = `http://localhost:5500`;
 
@@ -23,6 +24,7 @@ export default class Scene extends Phaser.Scene {
     this.OK = false;
     this.onChangeToNext = onChangeToNext;
     this.fallingPlatformGroup = null;
+    this.specialPlatforms = [];
   }
 
   preload() {
@@ -38,7 +40,6 @@ export default class Scene extends Phaser.Scene {
    * @param {Phaser.Tilemaps.ObjectLayer} layer
    */
   generateSpecialPlatforms(layer) {
-    console.log(this.physics.add);
     this.movingPlatformGroup = this.physics.add.group();
     this.fallingPlatformGroup = this.physics.add.group();
     if (!layer) return;
@@ -50,8 +51,18 @@ export default class Scene extends Phaser.Scene {
       /**
        * TODO: DANI DO THIS
        */
-      if (!tile.properties[0].name === 'range') {
-        this.movingPlatformGroup.create(tile.x, tile.y, 'moving_platform');
+      console.log(tile.properties[0].name)
+      if (tile.properties[0].name === 'range') {
+        // this.movingPlatformGroup.create(tile.x, tile.y, 'moving_platform');
+        console.log("xd")
+        const movingPlatform = new MovingPlatform(
+          this,
+          tile.x,
+          tile.y,
+          tile.properties[0].value,
+          'moving_platform'
+        );
+        this.specialPlatforms.push(movingPlatform);
       }
       if (tile.properties[0].name !== 'falling') return;
 
@@ -63,11 +74,6 @@ export default class Scene extends Phaser.Scene {
       );
       this.fallingPlatformGroup.name = 'falling_platform';
     });
-    // layer.forEachTile(tile => {
-    //   const { range } = tile.properties
-
-    //   // TODO: Dani
-    // });
   }
 
   /**
@@ -121,6 +127,9 @@ export default class Scene extends Phaser.Scene {
   update(time, delta) {
     if (!this.OK) return;
     this.sceneUpdate();
+    this.specialPlatforms.forEach((e) => {
+      e.update();
+    })
   }
 
   /**
@@ -224,6 +233,24 @@ export default class Scene extends Phaser.Scene {
     this.physics.world.addCollider(
       this.player.sprite,
       this.movingPlatformGroup,
+      (player, platform) => {
+        console.log(platform);
+        this.player.bounce = true;
+        platform.body.setImmovable(true);
+        setTimeout(() => {
+          this.player.bounce = false;
+          platform.body.setImmovable(false);
+        }, 100);
+      },
+      (player, platform) => {
+        console.log(platform);
+        this.player.bounce = true;
+        platform.body.setImmovable(true);
+        setTimeout(() => {
+          this.player.bounce = false;
+          platform.body.setImmovable(false);
+        }, 100);
+      }
     );
     this.physics.world.addCollider(
       this.player.sprite,

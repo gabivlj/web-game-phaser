@@ -10,6 +10,7 @@ class Scene4 extends Scene {
         key: 'FourthScene',
         tilemapKey: 'pls04.',
         tilesetKey: 'plstilemap02',
+        startingPointPlayer: [180, 300],
       },
       cutscene03,
     );

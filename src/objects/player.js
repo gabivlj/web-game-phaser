@@ -194,11 +194,15 @@ export default class Player {
         return;
       }
     }
+    if (this.bounce) sprite.setBounceY(100);
+    else {
+      sprite.setBounceX(0);
+      sprite.setBounceY(0);
+    }
     // Reset the max velocity in case that the player dashed.
     sprite.setMaxVelocity(300, 400);
     // Reset bounciness because we wanna let the player "attach" to the wall
-    sprite.setBounceX(0);
-    sprite.setBounceY(0);
+   
     // Check if player is on the ground. We use this.onGround because maybe external colliders are setting this true
     let onGround = sprite.body.blocked.down || this.onGround;
     // Check if colliding on left
@@ -246,6 +250,12 @@ export default class Player {
         o.body.setVelocityY(20);
       },
     );
+    //Only check this collision if the player is hitting on the top
+    this.scene.physics.world.overlap(
+      this.sprite,
+      this.scene.movingPlatformGroup,
+      
+    )
     // If he can move (because we don't want him to move in the middle of a cutscene)
     if (canMove) {
       if (isPressingLeft) {
