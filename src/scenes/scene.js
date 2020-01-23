@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import Phaser from 'phaser';
 import Player from '../objects/player';
 import sceneUtils from './scenes';
@@ -50,16 +51,16 @@ export default class Scene extends Phaser.Scene {
       /**
        * TODO: DANI DO THIS
        */
-      console.log(tile.properties[0].name)
+      console.log(tile.properties[0].name);
       if (tile.properties[0].name === 'range') {
         // this.movingPlatformGroup.create(tile.x, tile.y, 'moving_platform');
-        console.log("xd")
+        console.log('xd');
         const movingPlatform = new MovingPlatform(
           this,
           tile.x,
           tile.y,
           tile.properties[0].value,
-          'moving_platform'
+          'moving_platform',
         );
         this.specialPlatforms.push(movingPlatform);
       }
@@ -104,6 +105,7 @@ export default class Scene extends Phaser.Scene {
   }
 
   create() {
+    this.specialPlatforms = [];
     this.configScene(
       this.tilemapKey,
       this.startingPointPlayer[0],
@@ -121,9 +123,9 @@ export default class Scene extends Phaser.Scene {
   update(time, delta) {
     if (!this.OK) return;
     this.sceneUpdate();
-    this.specialPlatforms.forEach((e) => {
+    this.specialPlatforms.forEach(e => {
       e.update();
-    })
+    });
   }
 
   /**
@@ -244,15 +246,26 @@ export default class Scene extends Phaser.Scene {
           this.player.bounce = false;
           platform.body.setImmovable(false);
         }, 100);
-      }
+      },
     );
     this.physics.world.addCollider(
       this.player.sprite,
       this.fallingPlatformGroup,
-      () => {
+      (o2, o) => {},
+      (o2, o) => {
+        if (o.name === 'falling_platform') {
+          o.body.setVelocityY(50);
+          o.body.setImmovable(true);
+
+          // For checking every tick the collider in the create() scene method works better
+          this.player.onGround = true;
+          return;
+        }
+        o = o2;
         this.player.onGround = true;
+        o.body.setImmovable(true);
+        o.body.setVelocityY(20);
       },
-      () => {},
     );
     this.camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     timestamper.start(this);
