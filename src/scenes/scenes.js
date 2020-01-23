@@ -53,6 +53,7 @@ const sceneUtils = {
     scene.load.audio('jump_sound', `${path}/assets/jump01.mp3`);
     scene.load.image('tiles', `${path}/assets/Tileset.png`);
     scene.load.image('moving_platform', `${path}/assets/movingPlatform.png`);
+    scene.load.image('falling_platform', `${path}/assets/fallingPlatform.png`);
     scene.load.spritesheet('player2', `${path}/assets/tutorial/player.png`, {
       frameWidth: 32,
       frameHeight: 32,

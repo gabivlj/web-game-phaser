@@ -6,8 +6,8 @@ export default class FallingPlatform {
    * @param {string} sprite
    */
   constructor(scene, x, y, sprite) {
-    this.sprite = scene.physics.add.sprite(x, y, sprite, 0);
-    scene.fallingPlatformGroup.add(this.sprite);
+    this.sprite = scene.fallingPlatformGroup.create(x, y, sprite, 0);
+    this.sprite.setName('falling_platform');
     this.sprite.body.setAllowGravity(false);
   }
 }

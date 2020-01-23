@@ -59,8 +59,9 @@ export default class Scene extends Phaser.Scene {
         this,
         tile.x,
         tile.y,
-        'moving_platform',
+        'falling_platform',
       );
+      this.fallingPlatformGroup.name = 'falling_platform';
     });
     // layer.forEachTile(tile => {
     //   const { range } = tile.properties
@@ -227,6 +228,10 @@ export default class Scene extends Phaser.Scene {
     this.physics.world.addCollider(
       this.player.sprite,
       this.fallingPlatformGroup,
+      () => {
+        this.player.onGround = true;
+      },
+      () => {},
     );
     this.camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     timestamper.start(this);

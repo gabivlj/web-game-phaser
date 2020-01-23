@@ -7,7 +7,7 @@ class Scene4 extends Scene {
       {
         key: 'FifthScene',
         tilemapKey: 'pls05',
-        startingPointPlayer: [70, 650],
+        startingPointPlayer: [170, 300],
       },
       cutscene03,
     );
