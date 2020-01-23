@@ -11,7 +11,7 @@ const scenes = ['MainScene', 'FourthScene', 'SecondScene', 'ThirdScene'];
 let currentScene = 0;
 let maxScene = getConfig('maxScene', 'number', 0);
 
-let loadedMusic = false;
+const loadedMusic = false;
 
 /**
  * Scene utils that we are gonna use across all scenes so we save lines of code :)
@@ -38,7 +38,6 @@ const sceneUtils = {
    * @param {object} configuration Config. Object which tells the tilemap that we wanna load and the path of the stuff inside the webserver.
    */
   preloadScene(scene, { path, tilemapKey }) {
-    console.log(tilemapKey)
     const currentSceneStr = getCurrentScene();
     if (scene.scene.key !== currentSceneStr) {
       currentScene = scenes.indexOf(currentSceneStr);
@@ -93,110 +92,6 @@ const sceneUtils = {
     setCurrentScene(scenes[currentScene]);
     scene.player.setDead(false);
     scene.scene.start(scenes[currentScene]);
-  },
-
-  /**
-   * Shortcut for a scene update
-   * @this {Phaser.Scene} modified scene with this.player, and everything that an update needs.
-   */
-  sceneUpdate() {
-    this.camera.startFollow(this.player.sprite);
-    const canMove = this.cutscene ? this.cutscene() : true;
-    if (!this.player.sprite.body) return;
-    this.player.update(canMove);
-
-    if (this.player.sprite.y > this.heightOfMap - this.player.sprite.height) {
-      this.player.destroy();
-      this.scene.restart();
-      this.music.stop();
-      // this.player.setDead(true);
-    }
-  },
-
-  loadScene() {},
-
-  /**
-   * General create() configuration for a normal scene.
-   * @param {string} keyTileset
-   * @param {number} posXPlayer
-   * @param {number} posYPlayer
-   */
-  configScene(
-    keyTileset,
-    posXPlayer,
-    posYPlayer,
-    PlayerClass,
-    tilesetKey = 'plstileset',
-    configuration = { volume: 0, tilemapKey: 'plstileset' },
-  ) {
-    const { volume } = configuration;
-    // Check if we already loaded music
-    if (!loadedMusic)
-      this.music = this.sound.add('music', {
-        loop: true,
-        volume,
-        delay: 1,
-      });
-    // else just resume it
-    else this.music.resume();
-    // Set it on false so we know later to reset it
-    loadedMusic = false;
-    this.music.play();
-    // Make tilemap with the provided tileset key (For different maps u know)
-    const map = this.make.tilemap({ key: keyTileset });
-    // The height of the map for checking later if the player f***ed up and fell down.
-    this.heightOfMap = map.heightInPixels;
-    // Set world bounds
-    this.physics.world.setBounds(0, 0, map.widthInPixels, this.heightOfMap);
-    //  Add tileset image to the map, so we can use it. Usually the name of the tileset that we made in Tiled
-    //  is gonna be plstileset, if not just pass in the future to this function the name that you want,
-    //  and tiles is the key for the image that we loaded before
-    // TODO: call this pls pls
-    const tileset = map.addTilesetImage(tilesetKey, 'tiles');
-    // Background layer
-    const background = map.createStaticLayer('Background', tileset, 0, 0);
-    // Platforms layer
-    const platforms = map.createDynamicLayer('Platforms', tileset);
-    // Objects layer: (Goal, bad stuff etc.)
-    const objects = map.createDynamicLayer('Objects', tileset);
-    // Special Platform layer
-    const movingPlatforms = map.getObjectLayer('SpecialPlatforms');
-    // Loop through platforms to get the jumpy ones and add them to the physics group (so we know the player is overlapping)...
-    platforms.forEachTile(tile => {
-      if (!tile.properties.jump) {
-        return;
-      }
-      const jump = this.jumpGroup.create(
-        tile.getCenterX(),
-        tile.getCenterY(),
-        'jump',
-      );
-      jump.rotation = tile.rotation;
-      if (jump.angle === 0) jump.body.setSize(25, 12).setOffset(0, 5);
-      else if (jump.angle === -90) jump.body.setSize(6, 32).setOffset(0, 0);
-      else if (jump.angle === 90) jump.body.setSize(6, 32).setOffset(0, 0);
-      jump.visible = false;
-    });
-
-    // Loop through special platforms to get to move the ones that move
-    this.generateMovingPlatforms(movingPlatforms);
-    // Make them collidable
-    platforms.setCollisionByProperty({ collider: true });
-    // Make objects collidable
-    objects.setCollisionByProperty({ collider: true });
-    /**
-     * This depends a lot on the Scene object that you passed, literally you can do whatever you want with the objects array depending on the function
-     * usually you want to add what's gonna happen when the player hits the goal tiles or when he hits bad stuff like barrels.
-     * @see Scene scene.js
-     */
-    this.generateColGoal(objects);
-
-    this.camera = this.cameras.main;
-    this.player = new PlayerClass(this, posXPlayer, posYPlayer);
-    this.physics.world.addCollider(this.player.sprite, platforms);
-    this.physics.world.addCollider(this.player.sprite, objects);
-    this.camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-    timestamper.start(this);
   },
 };
 
