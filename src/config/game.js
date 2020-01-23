@@ -3,6 +3,7 @@ import Scene0 from '../scenes/scene0';
 import Scene1 from '../scenes/scene1';
 import Scene2 from '../scenes/scene2';
 import Scene4 from '../scenes/scene3';
+import Scene5 from '../scenes/scene4';
 
 const gameConfig = {
   title: 'Cool game',
@@ -19,7 +20,7 @@ const gameConfig = {
     },
   },
   pixelArt: true,
-  scene: [Scene0, Scene4, Scene2, Scene1],
+  scene: [Scene0, Scene5, Scene4, Scene2, Scene1],
 };
 
 export default gameConfig;

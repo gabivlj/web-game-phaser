@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-return-assign */
 import Phaser from 'phaser';
@@ -52,7 +53,6 @@ export default class Player {
           Math.floor(Math.random() * pickUpDialogWhenDead.length)
         ],
       ]);
-      console.log('m');
       // start dialog
       this.dialog.nextDialog();
       // if the dialog didn't finish for whatever reason finish it in 3 seconds with another nextDialog()
@@ -108,6 +108,8 @@ export default class Player {
       frameRate: 1,
       repeat: -1,
     });
+
+    this.onGround = false;
     // Track the arrow keys & WASD
     const {
       LEFT,
@@ -159,6 +161,7 @@ export default class Player {
       },
       scene,
     );
+    this.sprite.body.setMass(1);
   }
 
   setDead(bool) {
@@ -196,14 +199,15 @@ export default class Player {
     // Reset bounciness because we wanna let the player "attach" to the wall
     sprite.setBounceX(0);
     sprite.setBounceY(0);
-    // Check if player is on the ground.
-    const onGround = sprite.body.blocked.down;
+    // Check if player is on the ground. We use this.onGround because maybe external colliders are setting this true
+    let onGround = sprite.body.blocked.down || this.onGround;
     // Check if colliding on left
     const onLeft = sprite.body.blocked.left;
     // Check if colliding on right
     const onRight = sprite.body.blocked.right;
     // Wanna give more of a SM64 vibe when running.
     const acceleration = onGround ? 400 : 200;
+
     // Check if he is colliding with a jumping platform
     if (this.scene.physics.world.overlap(this.sprite, this.scene.jumpGroup)) {
       // SPIN!!!!!!!! :)
@@ -223,7 +227,25 @@ export default class Player {
       keys.right.isDown || keys.d.isDown,
       keys.up.isDown || keys.w.isDown,
     ];
+    // Only check this collision if the player is hittin on the top.
+    this.scene.physics.world.overlap(
+      this.sprite,
+      this.scene.fallingPlatformGroup,
+      (o2, o) => {
+        if (o.name === 'falling_platform') {
+          o.body.setVelocityY(50);
+          o.body.setImmovable(true);
 
+          // For checking every tick the collider in the create() scene method works better
+          onGround = true;
+          return;
+        }
+        o = o2;
+        onGround = true;
+        o.body.setImmovable(true);
+        o.body.setVelocityY(20);
+      },
+    );
     // If he can move (because we don't want him to move in the middle of a cutscene)
     if (canMove) {
       if (isPressingLeft) {
@@ -298,6 +320,7 @@ export default class Player {
       sprite.setAngularVelocity(0);
       sprite.setAngle(0);
       this.canDash = true;
+      this.onGround = false;
       if (sprite.body.velocity.x !== 0) sprite.anims.play('player-run', true);
       else sprite.anims.play('player-idle', true);
     } else {
