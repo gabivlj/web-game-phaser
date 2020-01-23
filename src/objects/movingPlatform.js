@@ -1,12 +1,9 @@
 import Phaser from 'phaser';
-import sceneUtils from '../scenes/scenes'
 
-<<<<<<< HEAD
 export default class MovingPlatform {
-    constructor() {
-        this.body.setAllowGravity(false);
-    }
+    constructor(scene, x, y, sprite) {
+        this.sprite = scene.fallingPlatformGroup.create(x, y, sprite, 0);
+        this.sprite.setName('moving_platform');
+        this.sprite.body.setAllowGravity(false);
+      }
 }
-=======
-export default class MovingPlatform {}
->>>>>>> 37bcebb9caa3c04224da7849a4523b22fd649e92
