@@ -36,7 +36,7 @@ export default class Scene extends Phaser.Scene {
    *
    * @param {Phaser.Tilemaps.ObjectLayer} layer
    */
-  generateMovingPlatforms(layer) {
+  generateSpecialPlatforms(layer) {
     console.log(this.physics.add);
     this.movingPlatformGroup = this.physics.add.group();
     if (!layer) return;
@@ -169,7 +169,7 @@ export default class Scene extends Phaser.Scene {
     // Objects layer: (Goal, bad stuff etc.)
     const objects = map.createDynamicLayer('Objects', tileset);
     // Special Platform layer
-    const movingPlatforms = map.getObjectLayer('SpecialPlatforms');
+    const specialPlatforms = map.getObjectLayer('SpecialPlatforms');
     // Loop through platforms to get the jumpy ones and add them to the physics group (so we know the player is overlapping)...
     platforms.forEachTile(tile => {
       if (!tile.properties.jump) {
@@ -188,7 +188,7 @@ export default class Scene extends Phaser.Scene {
     });
 
     // Loop through special platforms to get to move the ones that move
-    this.generateMovingPlatforms(movingPlatforms);
+    this.generateSpecialPlatforms(specialPlatforms);
     // Make them collidable
     platforms.setCollisionByProperty({ collider: true });
     // Make objects collidable

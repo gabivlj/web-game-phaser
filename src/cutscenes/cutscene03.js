@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 import Phaser from 'phaser';
 import DialogManager from '../objects/dialogManager';
 import { saveConfig, getConfig } from '../storage/menu';
