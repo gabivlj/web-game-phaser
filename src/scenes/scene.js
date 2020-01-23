@@ -42,6 +42,7 @@ export default class Scene extends Phaser.Scene {
     const { objects } = layer;
     objects.forEach(tile => {
       this.movingPlatformGroup.create(tile.x, tile.y, "moving_platform");
+      //this.body.setAllowGravity(false)
       console.log(layer)
     });
     // layer.forEachTile(tile => {
