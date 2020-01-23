@@ -45,11 +45,6 @@ export default class Scene extends Phaser.Scene {
     // por cada objeto haz new MovingPlatform(x, y, tuputamadre, sprite)
     const { objects } = layer;
     objects.forEach(tile => {
-<<<<<<< HEAD
-      this.movingPlatformGroup.create(tile.x, tile.y, "moving_platform");
-      //this.body.setAllowGravity(false)
-      console.log(layer)
-=======
       console.log(tile);
       if (!tile || !tile.properties) return;
       /**
@@ -67,7 +62,6 @@ export default class Scene extends Phaser.Scene {
         'falling_platform',
       );
       this.fallingPlatformGroup.name = 'falling_platform';
->>>>>>> 37bcebb9caa3c04224da7849a4523b22fd649e92
     });
     // layer.forEachTile(tile => {
     //   const { range } = tile.properties
