@@ -52,7 +52,6 @@ export default class Player {
           Math.floor(Math.random() * pickUpDialogWhenDead.length)
         ],
       ]);
-      console.log('m');
       // start dialog
       this.dialog.nextDialog();
       // if the dialog didn't finish for whatever reason finish it in 3 seconds with another nextDialog()
@@ -204,6 +203,14 @@ export default class Player {
     const onRight = sprite.body.blocked.right;
     // Wanna give more of a SM64 vibe when running.
     const acceleration = onGround ? 400 : 200;
+    this.scene.physics.world.overlap(
+      this.sprite,
+      this.scene.fallingPlatformGroup,
+      platform => {
+        platform.body.setAllowGravity(true);
+      },
+    );
+
     // Check if he is colliding with a jumping platform
     if (this.scene.physics.world.overlap(this.sprite, this.scene.jumpGroup)) {
       // SPIN!!!!!!!! :)

@@ -7,7 +7,13 @@ import { saveConfig, getConfig } from '../storage/menu';
 /* eslint-disable no-plusplus */
 
 // List of scene names that we are gonna use for cleaner scene one on one passing
-const scenes = ['MainScene', 'FourthScene', 'SecondScene', 'ThirdScene'];
+const scenes = [
+  'MainScene',
+  'FifthScene',
+  'FourthScene',
+  'SecondScene',
+  'ThirdScene',
+];
 let currentScene = 0;
 let maxScene = getConfig('maxScene', 'number', 0);
 

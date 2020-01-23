@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import Player from '../objects/player';
 import sceneUtils from './scenes';
 import timestamper from '../objects/timestamper';
+import FallingPlatform from '../objects/fallingPlatform';
 
 const path = `http://localhost:5500`;
 
@@ -11,7 +12,6 @@ export default class Scene extends Phaser.Scene {
   constructor(sceneConfig, cutscene, onChangeToNext = () => {}) {
     super(sceneConfig);
     this.tilesetKey = sceneConfig.tilesetKey || 'plstileset';
-    console.log(this.tilesetKey);
     this.startingPointPlayer = sceneConfig.startingPointPlayer || [70, 700];
     this.tilemapKey = sceneConfig.tilemapKey;
     this.controls = null;
@@ -22,6 +22,7 @@ export default class Scene extends Phaser.Scene {
     this.cutsceneFn = cutscene;
     this.OK = false;
     this.onChangeToNext = onChangeToNext;
+    this.fallingPlatformGroup = null;
   }
 
   preload() {
@@ -39,12 +40,27 @@ export default class Scene extends Phaser.Scene {
   generateSpecialPlatforms(layer) {
     console.log(this.physics.add);
     this.movingPlatformGroup = this.physics.add.group();
+    this.fallingPlatformGroup = this.physics.add.group();
     if (!layer) return;
     // por cada objeto haz new MovingPlatform(x, y, tuputamadre, sprite)
     const { objects } = layer;
     objects.forEach(tile => {
-      this.movingPlatformGroup.create(tile.x, tile.y, 'moving_platform');
-      console.log(layer);
+      console.log(tile);
+      if (!tile || !tile.properties) return;
+      /**
+       * TODO: DANI DO THIS
+       */
+      if (!tile.properties[0].name === 'range') {
+        this.movingPlatformGroup.create(tile.x, tile.y, 'moving_platform');
+      }
+      if (tile.properties[0].name !== 'falling') return;
+
+      const platform = new FallingPlatform(
+        this,
+        tile.x,
+        tile.y,
+        'moving_platform',
+      );
     });
     // layer.forEachTile(tile => {
     //   const { range } = tile.properties
@@ -204,6 +220,14 @@ export default class Scene extends Phaser.Scene {
     this.player = new PlayerClass(this, posXPlayer, posYPlayer);
     this.physics.world.addCollider(this.player.sprite, platforms);
     this.physics.world.addCollider(this.player.sprite, objects);
+    this.physics.world.addCollider(
+      this.player.sprite,
+      this.movingPlatformGroup,
+    );
+    this.physics.world.addCollider(
+      this.player.sprite,
+      this.fallingPlatformGroup,
+    );
     this.camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     timestamper.start(this);
   }
