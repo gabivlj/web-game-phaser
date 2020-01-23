@@ -38,14 +38,12 @@ export default class Scene extends Phaser.Scene {
    * @param {Phaser.Tilemaps.ObjectLayer} layer
    */
   generateSpecialPlatforms(layer) {
-    console.log(this.physics.add);
     this.movingPlatformGroup = this.physics.add.group();
     this.fallingPlatformGroup = this.physics.add.group();
     if (!layer) return;
     // por cada objeto haz new MovingPlatform(x, y, tuputamadre, sprite)
     const { objects } = layer;
     objects.forEach(tile => {
-      console.log(tile);
       if (!tile || !tile.properties) return;
       /**
        * TODO: DANI DO THIS
@@ -55,12 +53,7 @@ export default class Scene extends Phaser.Scene {
       }
       if (tile.properties[0].name !== 'falling') return;
 
-      const platform = new FallingPlatform(
-        this,
-        tile.x,
-        tile.y,
-        'falling_platform',
-      );
+      const _ = new FallingPlatform(this, tile.x, tile.y, 'falling_platform');
       this.fallingPlatformGroup.name = 'falling_platform';
     });
     // layer.forEachTile(tile => {
